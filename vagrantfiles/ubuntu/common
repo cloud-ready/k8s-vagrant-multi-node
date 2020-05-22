@@ -63,7 +63,7 @@ add-apt-repository \
 retries=5
 for ((i=1; i<=retries; i++)); do
     apt-get update
-    apt-get -y install docker-ce=#{$docker_version} && \
+    apt-get -y install docker-ce=#{$docker_version} docker-ce-cli=#{$docker_version} && \
         break
 
     [[ $retries -eq i ]] && { echo "Failed to install docker-ce after 5 tries"; exit 1; }
