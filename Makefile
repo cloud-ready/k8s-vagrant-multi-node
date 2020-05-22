@@ -235,6 +235,36 @@ clean-data: ## Remove data (shared folders) and disks of all VMs (master and nod
 clean-force: ## Remove all drives which should normally have been removed by the normal clean-master or clean-node-% targets.
 	rm -v -rf "$(MFILECWD)/.vagrant/"*.vdi "$(MFILECWD)/.vagrant/"*.img
 
+snapshot-list: snapshot-list-master snapshot-list-nodes ## Run vagrant snapshot list on master and nodes.
+
+snapshot-pop: snapshot-pop-master snapshot-pop-nodes ## Run vagrant snapshot pop on master and nodes.
+
+snapshot-push: snapshot-push-master snapshot-push-nodes ## Run vagrant snapshot push on master and nodes.
+
+snapshot-list-master: ## List snapshots for master VM.
+	vagrant snapshot list
+
+snapshot-pop-master: ## Restore pushed snapshot for master VM.
+	vagrant snapshot pop
+
+snapshot-push-master: ## Push snapshot into stack for master VM.
+	vagrant snapshot push
+
+snapshot-list-node-%: ## Run `vagrant snapshot list` for specific node  VM.
+	NODE=$* vagrant snapshot list
+
+snapshot-pop-node-%: ## Run `vagrant snapshot pop` for specific node  VM.
+	NODE=$* vagrant snapshot pop
+
+snapshot-push-node-%: ## Run `vagrant snapshot push` for specific node  VM.
+	NODE=$* vagrant snapshot push
+
+snapshot-list-nodes: $(shell for i in $(shell seq 1 $(NODE_COUNT)); do echo "snapshot-list-node-$$i"; done) ## Run `vagrant snapshot list` for all node VMs.
+
+snapshot-pop-nodes: $(shell for i in $(shell seq 1 $(NODE_COUNT)); do echo "snapshot-pop-node-$$i"; done) ## Run `vagrant snapshot pop` for all node VMs.
+
+snapshot-push-nodes: $(shell for i in $(shell seq 1 $(NODE_COUNT)); do echo "snapshot-push-node-$$i"; done) ## Run `vagrant snapshot push` for all node VMs.
+
 vagrant-reload: vagrant-reload-master vagrant-reload-nodes ## Run vagrant reload on master and nodes.
 
 vagrant-reload-master: ## Run vagrant reload for master VM.
@@ -301,6 +331,9 @@ help: ## Show this help menu.
 .PHONY: help kubectl kubectl-delete preflight token up \
 	clean clean-data clean-master clean-nodes \
 	load-image load-image-master load-image-nodes \
+	snapshot-list snapshot-list-master snapshot-list-nodes \
+        snapshot-push snapshot-push-master snapshot-push-nodes \
+	snapshot-pop snapshot-pop-master snapshot-pop-nodes \
 	ssh-config ssh-config-master ssh-config-nodes \
 	ssh-master \
 	start-master start-nodes \
