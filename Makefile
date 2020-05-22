@@ -177,6 +177,9 @@ kubectl-delete: ## Delete the created CLUSTER_NAME context from the kubeconfig (
 	$(eval CLUSTERCERTSDIR := $(shell mktemp -d))
 	if (kubectl config get-contexts $(CLUSTER_NAME) > /dev/null 2>&1); then kubectl config delete-context $(CLUSTER_NAME); fi
 
+kubectl-master: ## Load local/pulled image into master VM.
+	cat kubectl_config.sh | vagrant ssh "master"
+
 pull: ## Add and download, or update the box image for the chosen provider on the host.
 	echo $(MFILECWD)
 	if ! (vagrant box list | grep "$(BOX_IMAGE)" | grep -qi "$(VAGRANT_DEFAULT_PROVIDER)"); then \
@@ -328,11 +331,11 @@ help: ## Show this help menu.
 
 .DEFAULT_GOAL := help
 .EXPORT_ALL_VARIABLES:
-.PHONY: help kubectl kubectl-delete preflight token up \
+.PHONY: help kubectl kubectl-master kubectl-delete preflight token up \
 	clean clean-data clean-master clean-nodes \
 	load-image load-image-master load-image-nodes \
 	snapshot-list snapshot-list-master snapshot-list-nodes \
-        snapshot-push snapshot-push-master snapshot-push-nodes \
+    snapshot-push snapshot-push-master snapshot-push-nodes \
 	snapshot-pop snapshot-pop-master snapshot-pop-nodes \
 	ssh-config ssh-config-master ssh-config-nodes \
 	ssh-master \
